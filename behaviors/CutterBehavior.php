@@ -120,8 +120,10 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
     public function delete($attribute)
     {
         $name_image = $this->owner->oldAttributes[$attribute];
-        $mack = Yii::getAlias($this->basePath) . DIRECTORY_SEPARATOR . $name_image . '*';
-        array_map("unlink", glob($mack));
+        if(!empty($name_image)) {
+            $mack = Yii::getAlias($this->basePath) . DIRECTORY_SEPARATOR . $name_image . '*';
+            array_map("unlink", glob($mack));
+        }
     }
 
     /**
