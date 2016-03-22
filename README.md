@@ -74,6 +74,7 @@ or
 ```
 
 * Use in view
+
 > Get url to image
 ```php
     $model->getImg(100);
