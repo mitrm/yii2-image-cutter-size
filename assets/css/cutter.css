@@ -1,0 +1,20 @@
+.preview-pane {
+    padding: 10px 0;
+}
+
+.preview-pane .preview-container {
+    overflow: hidden;
+}
+
+.preview-pane .preview-image {
+    display: block !important;
+    width: 100%;
+    max-width: 100%
+}
+
+.icon-flipped {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
