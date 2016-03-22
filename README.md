@@ -13,9 +13,9 @@ This is a fork [Patroklo//yii2-image-cutter](https://github.com/davfervaz/yii2-i
 
 The preferred way to install this extension is through [Composer](http://getcomposer.org/).
 
-Either run ```php composer.phar require sadovojav/yii2-image-cutter "dev-master"```
+Either run ```php composer.phar require --prefer-dist mitrm/yii2-image-cutter "dev-master"```
 
-or add ```"sadovojav/yii2-image-cutter": "dev-master"``` to the require section of your ```composer.json```
+or add ```"mitrm/yii2-image-cutter": "dev-master"``` to the require section of your ```composer.json```
 
 ### Use
 
