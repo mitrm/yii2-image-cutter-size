@@ -72,7 +72,7 @@ class Cutter extends \yii\widgets\InputWidget
         ]);
 
         echo Html::beginTag('div', ['class' => 'preview-container']);
-        echo Html::img($this->model->{$this->attribute} ? $this->model->getImg(500) : null, [
+        echo Html::img($this->model->{$this->attribute} ? $this->model->getImg(500, $this->attribute) : null, [
             'class' => 'preview-image img-responsive',
         ]);
         echo Html::endTag('div');

@@ -52,22 +52,23 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
 
     public function beforeUpload()
     {
+
         if (is_array($this->attributes) && count($this->attributes)) {
             foreach ($this->attributes as $attribute) {
                 $this->upload($attribute);
             }
         } else {
+
             $this->upload($this->attributes);
         }
     }
 
     public function upload($attribute)
     {
-        if ($uploadImage = UploadedFile::getInstance($this->owner, $attribute)) {
+        if ($uploadImage = UploadedFile::getInstance($this->owner, $attribute) ) {
             if (!$this->owner->isNewRecord) {
                 $this->delete($attribute);
             }
-
             $cropping = $_POST[$attribute . '-cropping'];
 
             $croppingFileName = md5($uploadImage->name . $this->quality . Json::encode($cropping));
@@ -85,20 +86,21 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
             }
 
             $croppingFile = $croppingFilePath . DIRECTORY_SEPARATOR . $croppingFileName . $croppingFileExt;
+            if(!empty($uploadImage->tempName)) {
+                $imageTmp = Image::getImagine()->open($uploadImage->tempName);
+                $imageTmp->rotate($cropping['dataRotate']);
 
-            $imageTmp = Image::getImagine()->open($uploadImage->tempName);
-            $imageTmp->rotate($cropping['dataRotate']);
+                $image = Image::getImagine()->create($imageTmp->getSize());
+                $image->paste($imageTmp, new Point(0, 0));
 
-            $image = Image::getImagine()->create($imageTmp->getSize());
-            $image->paste($imageTmp, new Point(0, 0));
+                $point = new Point($cropping['dataX'], $cropping['dataY']);
+                $box = new Box($cropping['dataWidth'], $cropping['dataHeight']);
 
-            $point = new Point($cropping['dataX'], $cropping['dataY']);
-            $box = new Box($cropping['dataWidth'], $cropping['dataHeight']);
+                $image->crop($point, $box);
+                $image->save($croppingFile, ['quality' => $this->quality]);
 
-            $image->crop($point, $box);
-            $image->save($croppingFile, ['quality' => $this->quality]);
-
-            $this->owner->{$attribute} = $croppingFileName;
+                $this->owner->{$attribute} = $croppingFileName;
+            }
         } elseif (isset($_POST[$attribute . '-remove']) && $_POST[$attribute . '-remove']) {
             $this->delete($attribute);
         } elseif (isset($this->owner->oldAttributes[$attribute])) {
@@ -122,7 +124,7 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
         $name_image = $this->owner->oldAttributes[$attribute];
         if(!empty($name_image)) {
             $mack = Yii::getAlias($this->basePath) . DIRECTORY_SEPARATOR . $name_image . '*';
-            array_map("unlink", glob($mack));
+            @array_map("unlink", glob($mack));
         }
     }
 
@@ -130,9 +132,11 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
      * @brief Отдает оригинал загруженного изображения
      * @return string
      */
-    public function getImgOrigin()
+    public function getImgOrigin($attribute=false)
     {
-        $attribute = $this->attributes;
+        if(!is_array($this->attributes)) {
+            $attribute = $this->attributes;
+        }
         return $this->baseDir.'/'.$this->owner->$attribute.'.png';
     }
 
@@ -142,9 +146,11 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
      * @param int $size
      * @return bool|string
      */
-    public function getImg($size=500)
+    public function getImg($size=500, $attribute=false)
     {
-        $attribute = $this->attributes;
+        if(!is_array($this->attributes)) {
+            $attribute = $this->attributes;
+        }
         return self::getImgUrl($this->owner->$attribute, $size);
     }
 
@@ -159,7 +165,7 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
     {
         $image = $this->baseDir.'/'.$img.'_'.$size.'x'.$size.'.png';
         $image_path = $this->basePath.'/'.$img.'_'.$size.'x'.$size.'.png';
-        if(file_exists($image_path) && false) {
+        if(file_exists($image_path)) {
             return $image;
         } else {
             $file = $this->basePath.'/'.$img.'.png';
