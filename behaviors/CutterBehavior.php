@@ -17,6 +17,8 @@ use yii\web\UploadedFile;
  */
 class CutterBehavior extends \yii\behaviors\AttributeBehavior
 {
+    public $expansion = '.png';
+
     /**
      * Attributes
      * @var
@@ -72,7 +74,7 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
             $cropping = $_POST[$attribute . '-cropping'];
 
             $croppingFileName = md5($uploadImage->name . $this->quality . Json::encode($cropping));
-            $croppingFileExt = '.png';
+            $croppingFileExt = $this->expansion;
 
             $croppingFileBasePath = Yii::getAlias($this->basePath);
 
@@ -137,7 +139,7 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
         if(!is_array($this->attributes)) {
             $attribute = $this->attributes;
         }
-        return $this->baseDir.'/'.$this->owner->$attribute.'.png';
+        return $this->baseDir.'/'.$this->owner->$attribute.$this->expansion;
     }
 
     /**
@@ -163,20 +165,49 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
      */
     public function getImgUrl($img, $size=500)
     {
-        $image = $this->baseDir.'/'.$img.'_'.$size.'x'.$size.'.png';
-        $image_path = $this->basePath.'/'.$img.'_'.$size.'x'.$size.'.png';
+        $image = $this->baseDir.'/'.$img.'_'.$size.'x'.$size.$this->expansion;
+        $image_path = $this->basePath.'/'.$img.'_'.$size.'x'.$size.$this->expansion;
         if(file_exists($image_path)) {
             return $image;
         } else {
-            $file = $this->basePath.'/'.$img.'.png';
+            $file = $this->basePath.'/'.$img.$this->expansion;
             if(!file_exists($file)) {
                 return false;
             }
             $image = new ImageDriver(['driver' => 'GD']);
             $image = $image->load($file);
             $image->resize($size,$size);
-            $image->save($this->basePath.'/'.$img.'_'.$size.'x'.$size.'.png', 100);
-            return $this->baseDir.'/'.$img.'_'.$size.'x'.$size.'.png';
+            $image->save($this->basePath.'/'.$img.'_'.$size.'x'.$size.$this->expansion, 100);
+            return $this->baseDir.'/'.$img.'_'.$size.'x'.$size.$this->expansion;
+        }
+    }
+
+    /**
+     * @brief Отдает изображение под нужный размер
+     * @detailed если изображения нет под нужный размер, генерирует его в реальном времени
+     * @param $basePath
+     * @param $baseDir
+     * @param $img
+     * @param int $size
+     * @param $expansion
+     * @return bool|string
+     */
+    public static function getImageUrl($basePath, $baseDir, $img, $size=500, $expansion='.png')
+    {
+        $image = $baseDir.'/'.$img.'_'.$size.'x'.$size.$expansion;
+        $image_path = Yii::getAlias($basePath).'/'.$img.'_'.$size.'x'.$size.$expansion;
+        if(file_exists($image_path)) {
+            return $image;
+        } else {
+            $file = $basePath.'/'.$img.$expansion;
+            if(!file_exists($file)) {
+                return false;
+            }
+            $image = new ImageDriver(['driver' => 'GD']);
+            $image = $image->load($file);
+            $image->resize($size,$size);
+            $image->save($basePath.'/'.$img.'_'.$size.'x'.$size.$expansion, 100);
+            return $baseDir.'/'.$img.'_'.$size.'x'.$size.$expansion;
         }
     }
 
