@@ -10,6 +10,8 @@ use Imagine\Image\Box;
 use Imagine\Image\Point;
 use yii\db\ActiveRecord;
 use yii\web\UploadedFile;
+use Imagine\Image\Palette\RGB;
+use Imagine\Image\Palette\Color\RGB as RGBColor;
 
 /**
  * Class CutterBehavior
@@ -41,7 +43,7 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
      * Image cut quality
      * @var int
      */
-    public $quality = 92;
+    public $quality = 100;
 
     public function events()
     {
@@ -54,7 +56,6 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
 
     public function beforeUpload()
     {
-
         if (is_array($this->attributes) && count($this->attributes)) {
             foreach ($this->attributes as $attribute) {
                 $this->upload($attribute);
@@ -92,7 +93,10 @@ class CutterBehavior extends \yii\behaviors\AttributeBehavior
                 $imageTmp = Image::getImagine()->open($uploadImage->tempName);
                 $imageTmp->rotate($cropping['dataRotate']);
 
-                $image = Image::getImagine()->create($imageTmp->getSize());
+                $palette = new RGB();
+                $color = $palette->color('fff', 0);
+
+                $image = Image::getImagine()->create($imageTmp->getSize(), $color);
                 $image->paste($imageTmp, new Point(0, 0));
 
                 $point = new Point($cropping['dataX'], $cropping['dataY']);
