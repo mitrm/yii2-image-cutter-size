@@ -22,7 +22,7 @@ or add ```"mitrm/yii2-image-cutter": "dev-master"``` to the require section of y
 * Add to the model behavior
 
 ```php
-    use sadovojav\cutter\behaviors\CutterBehavior;
+    use mitrm\cutter\behaviors\CutterBehavior;
 
     public function behaviors()
     {
@@ -56,7 +56,7 @@ or add ```"mitrm/yii2-image-cutter": "dev-master"``` to the require section of y
 ```php
     <div class="form-group">
         <label class="control-label">Image</label>
-        <?= \sadovojav\cutter\Cutter::widget([
+        <?= \mitrm\cutter\Cutter::widget([
             'model' => $model,
             'attribute' => 'image'
         ]); ?>
@@ -68,7 +68,7 @@ or
 > With client validation
 
 ```php
-    <?= $form->field($model, 'image')->widget(\sadovojav\cutter\Cutter::className(), [
+    <?= $form->field($model, 'image')->widget(\mitrm\cutter\Cutter::className(), [
         //options
     ]); ?>
 ```
